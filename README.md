@@ -1,1 +1,4 @@
-# CL-RiskEgine
+### **CL-RiskEngine: Motor de Riesgo de Mercado Estocástico Multi-Activo & Stress Testing (HPC)**
+
+**Objetivo General:**
+Desarrollar e implementar una arquitectura de **High-Performance Computing (HPC)** para la simulación de Monte Carlo distribuida, orientada a cuantificar la exposición al riesgo de mercado (**VaR 99%**, **Expected Shortfall**) de portafolios indexados a variables críticas de la economía chilena (**IPSA, USD/CLP, UF**), mediante la orquestación de 100,000 escenarios de **Movimiento Browniano Geométrico Correlacionado** utilizando **Ray** y **Python** bajo estándares de MLOps de producción.

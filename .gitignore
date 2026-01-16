@@ -1,0 +1,121 @@
+# ==========================================
+# PYTHON BASE
+# ==========================================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ==========================================
+# VIRTUAL ENVIRONMENTS
+# ==========================================
+venv/
+.venv/
+env/
+.env/
+
+# ==========================================
+# DISTRIBUTION & BUILD
+# ==========================================
+dist/
+build/
+*.egg-info/
+
+# ==========================================
+# VARIABLES & SECURITY (CRITICAL)
+# ==========================================
+# Never upload real keys
+.env
+.env.local
+.env.*
+# Exception: Upload the template
+!.env.example
+
+# ==========================================
+# IDEs, OS & JUPYTER (Added Checkpoints)
+# ==========================================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# ==========================================
+# DATA LAKE ARCHITECTURE
+# ==========================================
+# Ignore content but keep folder structure
+data/raw/*
+data/staging/*
+data/curated/*
+data/temp/*
+
+# Exception: Keep the .gitkeep files
+!data/raw/.gitkeep
+!data/staging/.gitkeep
+!data/curated/.gitkeep
+
+# Ignore common data extensions (Safety net)
+*.csv
+*.parquet
+*.json
+*.avro
+*.xlsx
+*.xls
+*.log
+*.sqlite
+*.db
+
+# ==========================================
+# ORCHESTRATION & LOGS
+# ==========================================
+# Airflow
+airflow.db
+airflow.cfg
+webserver_config.py
+standalone_admin_password.txt
+*.pid
+
+# General Logs
+logs/
+*.log
+
+# ==========================================
+# DOCKER
+# ==========================================
+.docker/
+
+# ==========================================
+# MLOps & MODELS (High Performance)
+# ==========================================
+# MLFlow local storage
+mlruns/
+.trash/
+
+# Ray (Distributed Compute) Logs
+ray_results/
+/tmp/ray/
+
+# Serialized Models & Heavy Binaries
+*.pkl
+*.joblib
+*.h5
+*.onnx
+*.pt
+*.pth
+model_checkpoints/
+
+# ==========================================
+# TESTING & QUALITY
+# ==========================================
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+
+# ==========================================
+# MISC & EDITORS TEMP FILES
+# ==========================================
+~$*
+.$*
+*.tmp
+commit_message.txt
