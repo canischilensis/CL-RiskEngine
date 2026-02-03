@@ -1,0 +1,21 @@
+# --- Core: Procesamiento de Datos y Matemáticas ---
+pandas>=2.2.0        # Manipulación de DataFrames (Series de Tiempo)
+numpy>=1.26.0        # Cálculo numérico matricial
+scipy>=1.12.0        # Tests estadísticos (Normalidad, Jarque-Bera)
+
+# --- Data Engineering & Storage (Lakehouse) ---
+pyarrow>=15.0.0      # MOTOR CRÍTICO: Necesario para guardar/leer .parquet
+openpyxl>=3.1.0      # Necesario para leer archivos Excel (.xlsx)
+
+# --- Fuentes de Datos Financieros (APIs) ---
+yfinance>=0.2.36     # Descarga de acciones (Yahoo Finance)
+bcchapi              # Wrapper API Banco Central de Chile
+requests             # Cliente HTTP (Base para las APIs)
+
+# --- Visualización (Reporting) ---
+matplotlib           # Gráficos base
+seaborn              # Gráficos estadísticos de alto nivel
+
+# --- Configuración e Infraestructura ---
+python-dotenv        # Gestión de seguridad (.env)
+ipykernel            # (Opcional) Para ejecutar Jupyter Notebooks
