@@ -1,101 +1,97 @@
 # ==========================================
-# PYTHON BASE
+# 🐍 PYTHON CORE & BYTECODE
 # ==========================================
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
+.Python
 
 # ==========================================
-# VIRTUAL ENVIRONMENTS
+# 📦 VIRTUAL ENVIRONMENTS
 # ==========================================
 venv/
 .venv/
 env/
 .env/
+pip-selfcheck.json
 
 # ==========================================
-# DISTRIBUTION & BUILD
+# 📊 CL-RISKENGINE ARTIFACTS (UPDATED)
 # ==========================================
-dist/
-build/
-*.egg-info/
+# Ignore generated Risk Reports but keep the folder structure
+output/*
+!output/.gitkeep
+
+# Ignore local config overrides (if any)
+config/local_settings.py
 
 # ==========================================
-# VARIABLES & SECURITY (CRITICAL)
+# 💾 DATA LAKE & STORAGE (STRICT)
 # ==========================================
-# Never upload real keys
-.env
-.env.local
-.env.*
-# Exception: Upload the template
-!.env.example
+# Exclude all data files to prevent leaking proprietary financial info
+data/*
+!data/.gitkeep
 
-# ==========================================
-# IDEs, OS & JUPYTER (Added Checkpoints)
-# ==========================================
-.vscode/
-.idea/
-.DS_Store
-Thumbs.db
-.ipynb_checkpoints/
-*.ipynb_checkpoints
-
-# ==========================================
-# DATA LAKE ARCHITECTURE
-# ==========================================
-# Ignore content but keep folder structure
-data/raw/*
-data/staging/*
-data/curated/*
-data/temp/*
-
-# Exception: Keep the .gitkeep files
-!data/raw/.gitkeep
-!data/staging/.gitkeep
-!data/curated/.gitkeep
-
-# Ignore common data extensions (Safety net)
+# Common Data Science formats
 *.csv
 *.parquet
 *.json
 *.avro
 *.xlsx
 *.xls
-*.log
+*.xml
 *.sqlite
 *.db
 
 # ==========================================
-# ORCHESTRATION & LOGS
+# 🔐 SECURITY & SECRETS (CRITICAL)
 # ==========================================
-# Airflow
-airflow.db
-airflow.cfg
-webserver_config.py
-standalone_admin_password.txt
-*.pid
+# Never commit API Keys (Yahoo, BCCH, AWS)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.*
+!.env.example
 
-# General Logs
-logs/
+# ==========================================
+# 🛠 IDEs, EDITORS & OS
+# ==========================================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# ==========================================
+# 📓 JUPYTER NOTEBOOKS
+# ==========================================
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+profile_default/
+ipython_config.py
+
+# ==========================================
+# 🐳 DOCKER & CONTAINERS
+# ==========================================
+.docker/
 *.log
 
 # ==========================================
-# DOCKER
+# 🚀 MLOps & DISTRIBUTED COMPUTE
 # ==========================================
-.docker/
-
-# ==========================================
-# MLOps & MODELS (High Performance)
-# ==========================================
-# MLFlow local storage
-mlruns/
-.trash/
-
-# Ray (Distributed Compute) Logs
+# Ray / Dask logs
 ray_results/
 /tmp/ray/
 
-# Serialized Models & Heavy Binaries
+# MLFlow & Experiment Tracking
+mlruns/
+.trash/
+
+# Serialized Models (Don't commit heavy binaries >100MB)
 *.pkl
 *.joblib
 *.h5
@@ -105,17 +101,17 @@ ray_results/
 model_checkpoints/
 
 # ==========================================
-# TESTING & QUALITY
+# 🧪 TESTING & QA
 # ==========================================
 .pytest_cache/
 .coverage
 htmlcov/
 .mypy_cache/
+.tox/
 
 # ==========================================
-# MISC & EDITORS TEMP FILES
+# 🏗 DISTRIBUTION
 # ==========================================
-~$*
-.$*
-*.tmp
-commit_message.txt
+dist/
+build/
+*.egg-info/

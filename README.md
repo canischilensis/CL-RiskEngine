@@ -1,83 +1,83 @@
-# 🦁 CL-RiskEngine: High-Performance Monte Carlo Simulator
+# 🦁 CL-RiskEngine: Stochastic Financial Risk Simulator
 
-![Status](https://img.shields.io/badge/STATUS-ACTIVE-success?style=for-the-badge)
-![Python](https://img.shields.io/badge/PYTHON-3.10%2B-blue?style=for-the-badge&logo=python&logoColor=white)
-![License](https://img.shields.io/badge/LICENSE-MIT-green?style=for-the-badge)
-
-> **Motor de Riesgo Financiero Vectorizado** para el mercado chileno y global. Implementa simulación estocástica avanzada con detección de "Colas Gordas" (Fat Tails) y optimización de portafolios (Markowitz).
+> **Motor de Riesgo de Mercado Modular** diseñado para portafolios de alta volatilidad. Implementa simulación Monte Carlo Estructurada con ajuste de **Colas Pesadas (t-Student)** y cálculo automatizado de métricas VaR/CVaR.
 
 ---
 
 ## 📋 Table of Contents
-1. [About the Project](#-about-the-project)
-2. [Tech Stack](#-tech-stack)
-3. [Quant Methodology](#-quant-methodology)
-4. [Project Structure](#-project-structure)
-5. [Getting Started](#-getting-started)
-6. [Visual Results](#-visual-results)
+
+1. [About the Project](https://www.google.com/search?q=%23-about-the-project)
+2. [Tech Stack](https://www.google.com/search?q=%23-tech-stack)
+3. [Quant Methodology](https://www.google.com/search?q=%23-quant-methodology)
+4. [Project Structure](https://www.google.com/search?q=%23-project-structure)
+5. [Getting Started](https://www.google.com/search?q=%23-getting-started)
+6. [Visual Results](https://www.google.com/search?q=%23-visual-results)
 
 ---
 
 ## 🚀 About The Project
 
-**CL-RiskEngine** nace de la necesidad de modelar riesgos en mercados emergentes donde la "Normalidad Gaussiana" no existe. A diferencia de los simuladores académicos básicos, este motor integra ingeniería de datos real y matemáticas robustas.
+**CL-RiskEngine** es una solución de ingeniería financiera desarrollada para superar las limitaciones de los modelos de riesgo tradicionales que asumen normalidad en los retornos. Este software está diseñado para operar bajo la premisa de que los eventos extremos ("Cisnes Negros") son más frecuentes de lo que predice la teoría Gaussiana.
 
 ### Key Features
-* ✅ **Fat-Tail Awareness:** Detecta automáticamente la *Leptocurtosis* y cambia de Gaussiana a **t-Student Multivariada** ($\nu \approx 2.8$ para S&P500).
-* ✅ **High-Performance Computing:** Núcleo escrito con `numpy.einsum` para álgebra lineal vectorizada (10k escenarios en <1s).
-* ✅ **Correlation Healing:** Inducción de correlaciones vía **Cholesky** con reparación espectral para matrices no definidas positivas.
-* ✅ **Architecture Hexagonal:** Separación limpia entre Ingesta (ELT), Calibración (JSON) y Simulación (Monte Carlo).
+
+* ✅ **Fat-Tail Modeling:** Sustitución de la distribución Normal por **t-Student** calibrada dinámicamente ( degrees of freedom) para capturar leptocurtosis.
+* ✅ **Vectorized Simulation:** Núcleo matemático optimizado con `numpy` para proyectar miles de escenarios correlacionados sin bucles explícitos.
+* ✅ **Correlation Preservation:** Uso de **Descomposición de Cholesky** () para mantener la estructura de dependencia entre activos (e.g., Tech Stocks).
+* ✅ **Robust ETL:** Módulo de ingesta resiliente (`MarketDataLoader`) capaz de manejar inconsistencias en APIs financieras (Yahoo Finance) y limpiar datos faltantes.
+* ✅ **Automated Reporting:** Generación de Fichas Técnicas de Riesgo (`.txt`) con interpretación de negocio para VaR y CVaR (Expected Shortfall).
 
 ---
 
 ## 🛠 Tech Stack
 
-El proyecto utiliza un stack científico de última generación. Haz clic en los badges para ver la documentación:
+El proyecto implementa un stack científico enfocado en performance y reproducibilidad:
 
 ### Core & Math
-[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![NumPy](https://img.shields.io/badge/Numpy-777BB4?style=for-the-badge&logo=numpy&logoColor=white)](https://numpy.org/)
-[![SciPy](https://img.shields.io/badge/SciPy-654FF0?style=for-the-badge&logo=scipy&logoColor=white)](https://scipy.org/)
-[![Pandas](https://img.shields.io/badge/Pandas-2C2D72?style=for-the-badge&logo=pandas&logoColor=white)](https://pandas.pydata.org/)
 
-### Data Engineering & APIs
-[![Yahoo Finance](https://img.shields.io/badge/Yahoo_Finance-6001D2?style=for-the-badge&logo=yahoo&logoColor=white)](https://pypi.org/project/yfinance/)
-[![BCCH API](https://img.shields.io/badge/Banco_Central_Chile-002D56?style=for-the-badge)](https://github.com/Titogjs/bcchapi)
-[![Parquet](https://img.shields.io/badge/Apache_Parquet-C92919?style=for-the-badge&logo=apache&logoColor=white)](https://parquet.apache.org/)
-
-### Visualization & Analysis
-[![Matplotlib](https://img.shields.io/badge/Matplotlib-%23ffffff.svg?style=for-the-badge&logo=Matplotlib&logoColor=black)](https://matplotlib.org/)
-[![Jupyter](https://img.shields.io/badge/Jupyter-F37626.svg?style=for-the-badge&logo=Jupyter&logoColor=white)](https://jupyter.org/)
+### Data Engineering & Ingestion
 
 ---
 
 ## 🧮 Quant Methodology
 
-El motor se basa en la Ecuación Diferencial Estocástica (SDE) del Movimiento Browniano Geométrico modificado:
+El motor simula trayectorias de precios basadas en el **Movimiento Browniano Geométrico (GBM)** adaptado para colas pesadas.
 
-$$dS_t = (r - 0.5\sigma^2)S_t dt + \sigma S_t dZ_t$$
+La dinámica del precio  se modela como:
 
-Donde la innovación estocástica $dZ_t$ se modela mediante **t-Student normalizada** para capturar eventos extremos:
+Donde el término de innovación estocástica  se construye mediante:
 
-1.  **Calibración MLE:** Se obtienen los grados de libertad $\nu$ históricos para cada activo.
-2.  **Normalización:** $Z = t_\nu \cdot \sqrt{\frac{\nu-2}{\nu}}$ (para preservar la varianza unitaria).
-3.  **Correlación:** $Z_{corr} = Z \cdot L^T$ (donde $L$ es la matriz de Cholesky).
+1. **Ajuste de Distribución:** Se estima el parámetro  (grados de libertad) de los retornos históricos logarítmicos.
+2. **Generación de Shocks:** Se generan variables aleatorias  y .
+3. **Transformación t-Student:**
+
+
+4. **Inducción de Correlación:** Se aplica la matriz de Cholesky  para correlacionar los shocks independientes:
+
+
 
 ---
 
 ## 📂 Project Structure
 
+La arquitectura sigue el patrón de separación de responsabilidades (SoC) para facilitar el mantenimiento y escalabilidad:
+
 ```bash
 CL-RiskEngine/
-├── data/
-│   ├── 01_bronze/          # Raw Parquet files (BCCH + Yahoo)
-│   └── 02_silver/          # Log-Returns & Clean Data
-├── notebooks/
-│   ├── 01_eda_market_data.ipynb       # Ingesta, Cleaning & Jarque-Bera Tests
-│   └── 02_monte_carlo_simulation.ipynb # Simulación Vectorizada & Markowitz
-├── risk_engine_config.json # 🧠 The Brain: Matriz Sigma, Mu & Nu parameters
-├── requirements.txt        # Dependencias
-└── README.md               # You are here
+├── src/
+│   ├── data/
+│   │   ├── __init__.py
+│   │   └── loader.py       # Ingesta, limpieza y cálculo de Log-Returns
+│   ├── models/
+│   │   ├── __init__.py
+│   │   └── monte_carlo.py  # Motor matemático (Cholesky + t-Student)
+│   └── utils/
+│       ├── __init__.py
+│       └── reporter.py     # Cálculo de PnL y Generación de Reportes TXT
+├── output/                 # Carpeta destino para los reportes generados
+├── main.py                 # Orquestador del flujo de ejecución
+├── requirements.txt        # Dependencias del entorno
+└── README.md               # Documentación Técnica
 
 ```
 
@@ -87,27 +87,38 @@ CL-RiskEngine/
 
 ### Prerrequisitos
 
-* Python 3.10 o superior
-* Claves de API del Banco Central (opcional, si usas datos cacheados)
+* Python 3.8 o superior.
+* Conexión a internet (para descarga de datos de mercado).
 
 ### Instalación
 
 1. **Clonar el repositorio**
+
 ```bash
-git clone [https://github.com/tu-usuario/CL-RiskEngine.git](https://github.com/tu-usuario/CL-RiskEngine.git)
+git clone https://github.com/tu-usuario/CL-RiskEngine.git
+cd CL-RiskEngine
 
 ```
 
-2. **Activar entorno virtual**
+2. **Crear entorno virtual**
+
 ```bash
 python -m venv env
 source env/bin/activate  # Windows: env\Scripts\activate
 
 ```
 
-3. **Instalar librerías**
+3. **Instalar dependencias**
+
 ```bash
-pip install -r requirements.txt
+pip install yfinance pandas numpy scipy
+
+```
+
+4. **Ejecutar el Motor**
+
+```bash
+python main.py
 
 ```
 
@@ -115,30 +126,46 @@ pip install -r requirements.txt
 
 ## 📉 Visual Results
 
-### 1. Simulación de Escenarios (t-Student)
+El sistema genera automáticamente un reporte ejecutivo en la carpeta `output/`.
 
-*Proyección de 1,000 caminos posibles para SQM-B considerando colas pesadas.*
+**Ejemplo de Salida (Risk Report):**
 
-### 2. Frontera Eficiente (Markowitz Bullet)
+```text
+==================================================
+🛡️ CL-RISKENGINE | REPORTE EJECUTIVO
+Fecha: 2026-02-06_18-07
+==================================================
 
-*Optimización dinámica de portafolio Riesgo vs Retorno.*
+ACTIVOS: ['AAPL', 'MSFT', 'GOOGL', 'AMZN']
+MODELO: Monte Carlo Estructurado (t-Student)
+--------------------------------------------------
+Métrica                      Valor    
+Horizonte Temporal           252 días
+Simulaciones                 5000
+VaR 95% (Confianza)          -29.89%
+CVaR 95% (Déficit Esp.)      -38.53%
+VaR 99% (Estrés)             -44.56%
+CVaR 99% (Colapso)           -50.51%
+--------------------------------------------------
+
+```
 
 ---
 
 ## ⚠️ Disclaimer
 
-This project is for **educational and research purposes**. It is not financial advice. The models assume historical parameters which may not predict future performance.
+Este software es una prueba de concepto (PoC) para **investigación académica y desarrollo de portafolio**. No constituye asesoramiento financiero. Los modelos estocásticos se basan en parámetros históricos que no garantizan rendimientos futuros.
 
 ---
 
 <div align="center">
-<p>Developed with ❤️ by <strong> Canis chilensis</strong></p>
+<p>Developed with 💻 & ☕ by <strong>Canis chilensis</strong></p>
 <p>
-<a href="https://www.google.com/search?q=https://linkedin.com/in/gvidalastudillo">
-<img src="https://www.google.com/search?q=https://img.shields.io/badge/LinkedIn-blue%3Fstyle%3Dflat%26logo%3Dlinkedin%26logoColor%3Dwhite" alt="LinkedIn" />
+<a href="#">
+<img src="[https://img.shields.io/badge/LinkedIn-blue?style=flat&logo=linkedin&logoColor=white](https://www.google.com/search?q=https://img.shields.io/badge/LinkedIn-blue%3Fstyle%3Dflat%26logo%3Dlinkedin%26logoColor%3Dwhite)" alt="LinkedIn" />
 </a>
-<a href="https://www.google.com/search?q=https://github.com/canischilensis">
-<img src="https://www.google.com/search?q=https://img.shields.io/badge/GitHub-black%3Fstyle%3Dflat%26logo%3Dgithub%26logoColor%3Dwhite" alt="GitHub" />
+<a href="#">
+<img src="[https://img.shields.io/badge/GitHub-black?style=flat&logo=github&logoColor=white](https://www.google.com/search?q=https://img.shields.io/badge/GitHub-black%3Fstyle%3Dflat%26logo%3Dgithub%26logoColor%3Dwhite)" alt="GitHub" />
 </a>
 </p>
 </div>

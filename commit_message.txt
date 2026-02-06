@@ -1,0 +1,10 @@
+feat(arch): init project structure and data ingestion pipeline
+
+- Established Clean Architecture directory layout (src, data, config).
+- Implemented 'BCentralLoader' for asset filtering (IPSA, UF, USD).
+- Implemented 'DataTransformer' for log-returns calculation.
+- Added raw dataset 'maestro_series_bcentral_procesado.csv'.
+- Created placeholders for Core Math and Ray Engine modules.
+- Configured logging and environment templates.
+
+Ref: #CL-RiskEngine-v0.1

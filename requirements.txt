@@ -1,21 +1,31 @@
-# --- Core: Procesamiento de Datos y Matemáticas ---
-pandas>=2.2.0        # Manipulación de DataFrames (Series de Tiempo)
-numpy>=1.26.0        # Cálculo numérico matricial
-scipy>=1.12.0        # Tests estadísticos (Normalidad, Jarque-Bera)
+# ==========================================
+# 🧮 CORE: NUMERICAL COMPUTING & STATISTICS
+# ==========================================
+numpy>=1.26.0         # Operaciones matriciales (Cholesky, Einsum)
+pandas>=2.2.0         # Manipulación de Series Temporales (Log-Returns)
+scipy>=1.12.0         # Distribuciones estadísticas (t-Student fit, KS Test)
 
-# --- Data Engineering & Storage (Lakehouse) ---
-pyarrow>=15.0.0      # MOTOR CRÍTICO: Necesario para guardar/leer .parquet
-openpyxl>=3.1.0      # Necesario para leer archivos Excel (.xlsx)
+# ==========================================
+# 📡 MARKET DATA INGESTION (ETL)
+# ==========================================
+yfinance>=0.2.40      # API Yahoo Finance (Versión con parches para MultiIndex)
+requests>=2.31.0      # Cliente HTTP base
+bcchapi>=0.1.2        # (Opcional) Wrapper Banco Central de Chile
 
-# --- Fuentes de Datos Financieros (APIs) ---
-yfinance>=0.2.36     # Descarga de acciones (Yahoo Finance)
-bcchapi              # Wrapper API Banco Central de Chile
-requests             # Cliente HTTP (Base para las APIs)
+# ==========================================
+# 💾 DATA PERSISTENCE & FORMATS
+# ==========================================
+pyarrow>=15.0.0       # Motor Parquet (Crítico para I/O de alta velocidad)
+openpyxl>=3.1.2       # Soporte para archivos Excel (.xlsx) legacy
 
-# --- Visualización (Reporting) ---
-matplotlib           # Gráficos base
-seaborn              # Gráficos estadísticos de alto nivel
+# ==========================================
+# 📊 VISUALIZATION & REPORTING
+# ==========================================
+matplotlib>=3.8.0     # Librería base de graficación
+seaborn>=0.13.0       # Visualización estadística avanzada (Heatmaps, Distplots)
 
-# --- Configuración e Infraestructura ---
-python-dotenv        # Gestión de seguridad (.env)
-ipykernel            # (Opcional) Para ejecutar Jupyter Notebooks
+# ==========================================
+# 🛠 INFRASTRUCTURE & DEV TOOLS
+# ==========================================
+python-dotenv>=1.0.1  # Gestión segura de variables de entorno (.env)
+ipykernel>=6.29.0     # Kernel para ejecución de Notebooks interactivos
