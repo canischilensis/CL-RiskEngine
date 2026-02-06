@@ -1,0 +1,25 @@
+==================================================
+🛡️ CL-RISKENGINE | REPORTE DE RIESGO DE MERCADO
+Fecha de Ejecución: 2026-02-06_17-45
+==================================================
+
+ACTIVOS DEL PORTAFOLIO: ['CHILE.SN', 'COPEC.SN', 'SQM-B.SN', '^GSPC', 'UF', 'USD_OBS']
+MODELO: Monte Carlo Estructurado (t-Student Shocks)
+PARÁMETROS DE COLA (Nu Promedio): 4.409199999999999
+
+--------------------------------------------------
+RESULTADOS DE LA SIMULACIÓN:
+Métrica de Riesgo       Valor    Interpretación                    
+        Capital Inicial  $100.00                  Base 100 indexada
+     Horizonte Temporal 252 días                     1 Año Bursátil
+   Escenarios Simulados     1000      Universos Paralelos t-Student
+    VaR 95% (Confianza)  -19.06%     Pérdida máx. esperada (normal)
+CVaR 95% (Déficit Esp.)  -25.47%  Promedio de pérdida en malos años
+       VaR 99% (Estrés)  -29.16%   Pérdida en crisis severa (1/100)
+     CVaR 99% (Colapso)  -35.45% Impacto promedio de un Cisne Negro
+
+--------------------------------------------------
+NOTA TÉCNICA:
+El CVaR 99% indica que, en el peor 1% de los casos, el portafolio
+podría sufrir una desvalorización promedio superior al 35%.
+Se recomienda mantener reservas de liquidez acordes a este escenario.

@@ -142,7 +142,3 @@ This project is for **educational and research purposes**. It is not financial a
 </a>
 </p>
 </div>
-
-```
-
-```

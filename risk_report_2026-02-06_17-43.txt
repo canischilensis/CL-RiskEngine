@@ -1,0 +1,11 @@
+==================================================
+🛡️ CL-RISKENGINE | REPORTE DE RIESGO DE MERCADO
+Fecha de Ejecución: 2026-02-06_17-43
+==================================================
+
+ACTIVOS DEL PORTAFOLIO: ['CHILE.SN', 'COPEC.SN', 'SQM-B.SN', '^GSPC', 'UF', 'USD_OBS']
+MODELO: Monte Carlo Estructurado (t-Student Shocks)
+PARÁMETROS DE COLA (Nu Promedio): 4.41
+
+--------------------------------------------------
+RESULTADOS DE LA SIMULACIÓN:
