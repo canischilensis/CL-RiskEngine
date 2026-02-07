@@ -1,31 +1,39 @@
 # ==========================================
 # 🧮 CORE: NUMERICAL COMPUTING & STATISTICS
 # ==========================================
-numpy>=1.26.0         # Operaciones matriciales (Cholesky, Einsum)
-pandas>=2.2.0         # Manipulación de Series Temporales (Log-Returns)
-scipy>=1.12.0         # Distribuciones estadísticas (t-Student fit, KS Test)
+numpy>=1.26.0
+pandas>=2.2.0
+scipy>=1.12.0
 
 # ==========================================
 # 📡 MARKET DATA INGESTION (ETL)
 # ==========================================
-yfinance>=0.2.40      # API Yahoo Finance (Versión con parches para MultiIndex)
-requests>=2.31.0      # Cliente HTTP base
-bcchapi>=0.1.2        # (Opcional) Wrapper Banco Central de Chile
+yfinance>=0.2.40
+requests>=2.31.0
+bcchapi>=0.1.2
 
 # ==========================================
 # 💾 DATA PERSISTENCE & FORMATS
 # ==========================================
-pyarrow>=15.0.0       # Motor Parquet (Crítico para I/O de alta velocidad)
-openpyxl>=3.1.2       # Soporte para archivos Excel (.xlsx) legacy
+pyarrow>=15.0.0
+openpyxl>=3.1.2
 
 # ==========================================
 # 📊 VISUALIZATION & REPORTING
 # ==========================================
-matplotlib>=3.8.0     # Librería base de graficación
-seaborn>=0.13.0       # Visualización estadística avanzada (Heatmaps, Distplots)
+matplotlib>=3.8.0
+seaborn>=0.13.0
 
 # ==========================================
 # 🛠 INFRASTRUCTURE & DEV TOOLS
 # ==========================================
-python-dotenv>=1.0.1  # Gestión segura de variables de entorno (.env)
-ipykernel>=6.29.0     # Kernel para ejecución de Notebooks interactivos
+python-dotenv>=1.0.1
+ipykernel>=6.29.0
+
+# ==========================================
+# 🚀 API & SERVER (NUEVO - CRÍTICO)
+# ==========================================
+fastapi>=0.109.0
+uvicorn>=0.27.0
+pydantic>=2.6.0
+multipart>=0.0.6
