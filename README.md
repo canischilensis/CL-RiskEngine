@@ -1,6 +1,6 @@
-# 🦁 CL-RiskEngine: Stochastic Financial Risk Simulator
+# 💸 CL-RiskEngine: Stochastic Financial Risk Microservice
 
-> **Motor de Riesgo de Mercado Modular** diseñado para portafolios de alta volatilidad. Implementa simulación Monte Carlo Estructurada con ajuste de **Colas Pesadas (t-Student)** y cálculo automatizado de métricas VaR/CVaR.
+> **Microservicio de Riesgo Financiero** containerizado. Implementa simulación Monte Carlo Estructurada con ajuste de **Colas Pesadas (t-Student)**, expuesto vía API REST para integración en sistemas de inversión.
 
 ---
 
@@ -10,32 +10,32 @@
 2. [Tech Stack](https://www.google.com/search?q=%23-tech-stack)
 3. [Quant Methodology](https://www.google.com/search?q=%23-quant-methodology)
 4. [Project Structure](https://www.google.com/search?q=%23-project-structure)
-5. [Getting Started](https://www.google.com/search?q=%23-getting-started)
-6. [Visual Results](https://www.google.com/search?q=%23-visual-results)
+5. [Getting Started (Docker)](https://www.google.com/search?q=%23-getting-started-docker)
+6. [API Usage](https://www.google.com/search?q=%23-api-usage)
 
 ---
 
 ## 🚀 About The Project
 
-**CL-RiskEngine** es una solución de ingeniería financiera desarrollada para superar las limitaciones de los modelos de riesgo tradicionales que asumen normalidad en los retornos. Este software está diseñado para operar bajo la premisa de que los eventos extremos ("Cisnes Negros") son más frecuentes de lo que predice la teoría Gaussiana.
+**CL-RiskEngine v2.0** evoluciona el motor de riesgo original hacia una arquitectura orientada a servicios (**SOA**). Mantiene la robustez matemática del modelado de "Cisnes Negros", pero ahora permite su consumo agnóstico desde cualquier frontend o sistema externo mediante HTTP.
 
 ### Key Features
 
-* ✅ **Fat-Tail Modeling:** Sustitución de la distribución Normal por **t-Student** calibrada dinámicamente ( degrees of freedom) para capturar leptocurtosis.
-* ✅ **Vectorized Simulation:** Núcleo matemático optimizado con `numpy` para proyectar miles de escenarios correlacionados sin bucles explícitos.
-* ✅ **Correlation Preservation:** Uso de **Descomposición de Cholesky** () para mantener la estructura de dependencia entre activos (e.g., Tech Stocks).
-* ✅ **Robust ETL:** Módulo de ingesta resiliente (`MarketDataLoader`) capaz de manejar inconsistencias en APIs financieras (Yahoo Finance) y limpiar datos faltantes.
-* ✅ **Automated Reporting:** Generación de Fichas Técnicas de Riesgo (`.txt`) con interpretación de negocio para VaR y CVaR (Expected Shortfall).
+* ✅ **Fat-Tail Modeling:** Sustitución de la distribución Normal por **t-Student** ( degrees of freedom) calibrada dinámicamente para capturar leptocurtosis.
+* ✅ **Microservice Architecture:** Motor expuesto vía **FastAPI** con documentación automática (Swagger UI/Redoc).
+* ✅ **Containerization:** Empaquetado en **Docker** (Python Slim) para despliegue consistente en cualquier entorno (Local/AWS/Kubernetes).
+* ✅ **Correlation Preservation:** Uso de **Descomposición de Cholesky** () para mantener la estructura de dependencia entre activos.
+* ✅ **Robust ETL:** Sistema resiliente a fallos de API de terceros y limpieza de datos automatizada.
 
 ---
 
 ## 🛠 Tech Stack
 
-El proyecto implementa un stack científico enfocado en performance y reproducibilidad:
+El proyecto implementa un stack moderno de **MLOps** e Ingeniería Financiera:
 
 ### Core & Math
 
-### Data Engineering & Ingestion
+### API & Infrastructure
 
 ---
 
@@ -47,106 +47,107 @@ La dinámica del precio  se modela como:
 
 Donde el término de innovación estocástica  se construye mediante:
 
-1. **Ajuste de Distribución:** Se estima el parámetro  (grados de libertad) de los retornos históricos logarítmicos.
+1. **Ajuste de Distribución:** Se estima el parámetro  (grados de libertad) de los retornos históricos.
 2. **Generación de Shocks:** Se generan variables aleatorias  y .
-3. **Transformación t-Student:**
-
-
-4. **Inducción de Correlación:** Se aplica la matriz de Cholesky  para correlacionar los shocks independientes:
-
-
+3. **Transformación t-Student:** 
+4. **Inducción de Correlación:** Se aplica la matriz de Cholesky  para correlacionar los shocks: 
 
 ---
 
 ## 📂 Project Structure
 
-La arquitectura sigue el patrón de separación de responsabilidades (SoC) para facilitar el mantenimiento y escalabilidad:
+Arquitectura modular preparada para producción:
 
 ```bash
 CL-RiskEngine/
 ├── src/
-│   ├── data/
-│   │   ├── __init__.py
-│   │   └── loader.py       # Ingesta, limpieza y cálculo de Log-Returns
-│   ├── models/
-│   │   ├── __init__.py
-│   │   └── monte_carlo.py  # Motor matemático (Cholesky + t-Student)
-│   └── utils/
-│       ├── __init__.py
-│       └── reporter.py     # Cálculo de PnL y Generación de Reportes TXT
-├── output/                 # Carpeta destino para los reportes generados
-├── main.py                 # Orquestador del flujo de ejecución
-├── requirements.txt        # Dependencias del entorno
-└── README.md               # Documentación Técnica
+│   ├── api/                # 🌐 Capa de Servicio (Nuevo v2.0)
+│   │   ├── routers/        # Endpoints (e.g., /simulate)
+│   │   ├── schemas/        # Contratos Pydantic (Request/Response)
+│   │   └── main.py         # Entrypoint FastAPI
+│   ├── data/               # 💾 Capa de Ingesta
+│   ├── models/             # 🧠 Capa de Cálculo (Monte Carlo Core)
+│   └── utils/              # 🛠 Helpers
+├── output/                 # Persistencia de reportes
+├── Dockerfile              # 🐳 Definición de Imagen
+├── docker-compose.yml      # 🐙 Orquestador de Servicios
+├── requirements.txt        # Dependencias
+└── README.md               # Documentación
 
 ```
 
 ---
 
-## 🏁 Getting Started
+## 🏁 Getting Started (Docker)
+
+La forma recomendada de ejecutar el motor es mediante contenedores. Esto garantiza que el entorno sea idéntico al de desarrollo.
 
 ### Prerrequisitos
 
-* Python 3.8 o superior.
-* Conexión a internet (para descarga de datos de mercado).
+* Docker & Docker Compose instalados.
 
-### Instalación
+### Despliegue en 1 Paso
 
-1. **Clonar el repositorio**
+1. **Clonar y Levantar:**
 
 ```bash
 git clone https://github.com/tu-usuario/CL-RiskEngine.git
 cd CL-RiskEngine
 
-```
-
-2. **Crear entorno virtual**
-
-```bash
-python -m venv env
-source env/bin/activate  # Windows: env\Scripts\activate
+# Construir y levantar el servicio
+docker-compose up --build
 
 ```
 
-3. **Instalar dependencias**
-
-```bash
-pip install yfinance pandas numpy scipy
-
-```
-
-4. **Ejecutar el Motor**
-
-```bash
-python main.py
-
-```
+2. **Verificar:**
+El servicio estará disponible en: `http://localhost:8000`
 
 ---
 
-## 📉 Visual Results
+## 🔌 API Usage
 
-El sistema genera automáticamente un reporte ejecutivo en la carpeta `output/`.
+Una vez levantado el servicio, puede interactuar con el motor a través de la documentación interactiva (Swagger UI) o mediante `curl`.
 
-**Ejemplo de Salida (Risk Report):**
+### 📖 Documentación Interactiva
 
-```text
-==================================================
-🛡️ CL-RISKENGINE | REPORTE EJECUTIVO
-Fecha: 2026-02-06_18-07
-==================================================
+Visite **[http://localhost:8000/docs](https://www.google.com/search?q=http://localhost:8000/docs)** para probar los endpoints directamente desde el navegador.
 
-ACTIVOS: ['AAPL', 'MSFT', 'GOOGL', 'AMZN']
-MODELO: Monte Carlo Estructurado (t-Student)
---------------------------------------------------
-Métrica                      Valor    
-Horizonte Temporal           252 días
-Simulaciones                 5000
-VaR 95% (Confianza)          -29.89%
-CVaR 95% (Déficit Esp.)      -38.53%
-VaR 99% (Estrés)             -44.56%
-CVaR 99% (Colapso)           -50.51%
---------------------------------------------------
+### ⚡ Ejemplo de Request (cURL)
+
+```bash
+curl -X 'POST' \
+  'http://localhost:8000/v1/risk/simulate' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "tickers": ["AAPL", "GOOGL", "MSFT"],
+  "horizon": 252,
+  "n_sims": 5000,
+  "confidence_level": 0.95
+}'
+
+```
+
+### 📦 Ejemplo de Respuesta (JSON)
+
+```json
+{
+  "status": "success",
+  "metadata": {
+    "start_date": "2024-02-08",
+    "end_date": "2026-02-07",
+    "execution_time": 0.45
+  },
+  "metrics": {
+    "VaR 95%": {
+      "value": -0.2811,
+      "description": "Pérdida máxima esperada con 95% de confianza"
+    },
+    "CVaR 95%": {
+      "value": -0.3839,
+      "description": "Pérdida promedio en el peor 5% de los casos"
+    }
+  }
+}
 
 ```
 
@@ -162,7 +163,7 @@ Este software es una prueba de concepto (PoC) para **investigación académica y
 <p>Developed with 💻 & ☕ by <strong>Canis chilensis</strong></p>
 <p>
 <a href="#">
-<img src="[https://img.shields.io/badge/LinkedIn-blue?style=flat&logo=linkedin&logoColor=white](https://www.google.com/search?q=https://img.shields.io/badge/LinkedIn-blue%3Fstyle%3Dflat%26logo%3Dlinkedin%26logoColor%3Dwhite)" alt="LinkedIn" />
+<img src="[https://img.shields.io/badge/LinkedIn-blue?style=flat&logo=linkedin&logoColor=white](https://img.shields.io/badge/LinkedIn-blue?style=flat&logo=linkedin&logoColor=white)" alt="LinkedIn" />
 </a>
 <a href="#">
 <img src="[https://img.shields.io/badge/GitHub-black?style=flat&logo=github&logoColor=white](https://www.google.com/search?q=https://img.shields.io/badge/GitHub-black%3Fstyle%3Dflat%26logo%3Dgithub%26logoColor%3Dwhite)" alt="GitHub" />
