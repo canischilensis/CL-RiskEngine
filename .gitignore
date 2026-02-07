@@ -17,13 +17,18 @@ env/
 pip-selfcheck.json
 
 # ==========================================
-# 📊 CL-RISKENGINE ARTIFACTS (UPDATED)
+# 📊 CL-RISKENGINE ARTIFACTS
 # ==========================================
 # Ignore generated Risk Reports but keep the folder structure
 output/*
 !output/.gitkeep
 
-# Ignore local config overrides (if any)
+# Ignore root level artifacts (Dev garbage)
+risk_report.txt
+commit_message.txt
+tree.py
+
+# Ignore local config overrides
 config/local_settings.py
 
 # ==========================================
@@ -33,7 +38,7 @@ config/local_settings.py
 data/*
 !data/.gitkeep
 
-# Common Data Science formats
+# Common Data Science formats (Global Ban)
 *.csv
 *.parquet
 *.json
@@ -65,6 +70,7 @@ data/*
 Thumbs.db
 *.swp
 *~
+__MACOSX/
 
 # ==========================================
 # 📓 JUPYTER NOTEBOOKS
@@ -81,11 +87,12 @@ ipython_config.py
 *.log
 
 # ==========================================
-# 🚀 MLOps & DISTRIBUTED COMPUTE
+# 🚀 MLOps & DISTRIBUTED COMPUTE (RAY)
 # ==========================================
-# Ray / Dask logs
+# Ray / Dask logs & sessions
 ray_results/
 /tmp/ray/
+session_*/
 
 # MLFlow & Experiment Tracking
 mlruns/
