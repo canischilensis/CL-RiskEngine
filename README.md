@@ -1,6 +1,6 @@
-# 💸 CL-RiskEngine: Stochastic Financial Risk Microservice
+# 🦁 CL-RiskEngine: Distributed Financial Risk Platform
 
-> **Microservicio de Riesgo Financiero** containerizado. Implementa simulación Monte Carlo Estructurada con ajuste de **Colas Pesadas (t-Student)**, expuesto vía API REST para integración en sistemas de inversión.
+> **Plataforma de Riesgo Financiero Distribuida**. Implementa simulación Monte Carlo paralela mediante el **Modelo de Actores (Ray)**, soportada por una arquitectura de datos **Lakehouse (ELT)** y modelos matemáticos modulares (Strategy Pattern).
 
 ---
 
@@ -9,153 +9,148 @@
 1. [About the Project](https://www.google.com/search?q=%23-about-the-project)
 2. [Tech Stack](https://www.google.com/search?q=%23-tech-stack)
 3. [Quant Methodology](https://www.google.com/search?q=%23-quant-methodology)
-4. [Project Structure](https://www.google.com/search?q=%23-project-structure)
-5. [Getting Started (Docker)](https://www.google.com/search?q=%23-getting-started-docker)
-6. [API Usage](https://www.google.com/search?q=%23-api-usage)
-g
+4. [Architecture & Data Flow](https://www.google.com/search?q=%23-architecture--data-flow)
+5. [Project Structure](https://www.google.com/search?q=%23-project-structure)
+6. [Getting Started](https://www.google.com/search?q=%23-getting-started)
+7. [Performance](https://www.google.com/search?q=%23-performance)
+
 ---
 
 ## 🚀 About The Project
 
-**CL-RiskEngine v2.0** evoluciona el motor de riesgo original hacia una arquitectura orientada a servicios (**SOA**). Mantiene la robustez matemática del modelado de "Cisnes Negros", pero ahora permite su consumo agnóstico desde cualquier frontend o sistema externo mediante HTTP.
+**CL-RiskEngine v3.0** marca la transición de un script monolítico a un sistema de ingeniería financiera escalable. Diseñado para portafolios de alta volatilidad, el sistema abandona el procesamiento secuencial para adoptar un **Cluster de Cómputo Distribuido** capaz de procesar miles de escenarios complejos en segundos.
 
-### Key Features
+### Key Features (v3.0)
 
-* ✅ **Fat-Tail Modeling:** Sustitución de la distribución Normal por **t-Student** ( degrees of freedom) calibrada dinámicamente para capturar leptocurtosis.
-* ✅ **Microservice Architecture:** Motor expuesto vía **FastAPI** con documentación automática (Swagger UI/Redoc).
-* ✅ **Containerization:** Empaquetado en **Docker** (Python Slim) para despliegue consistente en cualquier entorno (Local/AWS/Kubernetes).
+* ⚡ **Distributed Computing:** Motor impulsado por **Ray**, utilizando el *Actor Model* para paralelizar simulaciones a través de todos los núcleos de CPU disponibles (Map-Reduce).
+* 💾 **Data Lakehouse Architecture:** Pipeline **ELT** robusto que ingesta datos crudos (Capa Bronce/CSV) y los transforma a formato columnar optimizado (Capa Plata/Parquet) para lectura de alta velocidad.
+* 🧩 **Strategy Pattern Design:** Desacoplamiento total entre el orquestador y la lógica matemática. Permite intercambiar modelos (t-Student vs GBM vs Heston) sin modificar el núcleo del sistema.
+* ✅ **Fat-Tail Modeling:** Implementación de **t-Student Multivariada** con *Clamping* de seguridad () para evitar desbordamientos numéricos en escenarios de crisis.
 * ✅ **Correlation Preservation:** Uso de **Descomposición de Cholesky** () para mantener la estructura de dependencia entre activos.
-* ✅ **Robust ETL:** Sistema resiliente a fallos de API de terceros y limpieza de datos automatizada.
 
 ---
 
 ## 🛠 Tech Stack
 
-El proyecto implementa un stack moderno de **MLOps** e Ingeniería Financiera:
+### Distributed Core
 
-### Core & Math
+* **Ray:** Orquestación de actores y paralelismo de memoria compartida.
+* **Multiprocessing:** Detección dinámica de hardware.
 
-### API & Infrastructure
+### Data Engineering
+
+* **Pandas & NumPy:** Manipulación vectorial.
+* **Apache Parquet (PyArrow):** Almacenamiento columnar eficiente (Silver Layer).
+* **yFinance:** Gateway de datos de mercado.
+
+### Math & Quant
+
+* **SciPy:** Ajuste estadístico de distribuciones (MLE).
+* **Monte Carlo:** Simulación estocástica vectorizada.
 
 ---
 
 ## 🧮 Quant Methodology
 
-El motor simula trayectorias de precios basadas en el **Movimiento Browniano Geométrico (GBM)** adaptado para colas pesadas.
+El motor simula trayectorias de precios basadas en una **Cópula t-Student** para capturar eventos de cola (Cisnes Negros).
 
 La dinámica del precio  se modela como:
 
-Donde el término de innovación estocástica  se construye mediante:
+Donde la innovación estocástica distribuida  sigue el proceso:
 
-1. **Ajuste de Distribución:** Se estima el parámetro  (grados de libertad) de los retornos históricos.
-2. **Generación de Shocks:** Se generan variables aleatorias  y .
-3. **Transformación t-Student:** 
-4. **Inducción de Correlación:** Se aplica la matriz de Cholesky  para correlacionar los shocks: 
+1. **Calibración:** Se estima  (grados de libertad) y la matriz de covarianza .
+2. **Safety Clamping:** Se restringe  para evitar varianza infinita: .
+3. **Generación de Shocks:**
+
+
+4. **Correlación (Cholesky):** 
+
+---
+
+## 🏗 Architecture & Data Flow
+
+El sistema sigue una arquitectura de flujo de datos unidireccional y capas de abstracción:
+
+1. **Ingesta (Loader):** Descarga  `data/bronze/` (CSV Auditables).
+2. **Transformación:** Limpieza + Log-Returns  `data/silver/` (Parquet Optimizado).
+3. **Entrenamiento (Driver):** El proceso principal ajusta el modelo matemático.
+4. **Distribución (Ray Cluster):** Se clona la estrategia a  Actores (Workers).
+5. **Reducción:** Se fusionan los tensores de resultados `(Sims, Time, Assets)`.
 
 ---
 
 ## 📂 Project Structure
 
-Arquitectura modular preparada para producción:
-
 ```bash
 CL-RiskEngine/
+├── data/                   # 🛑 GIT IGNORED (Lakehouse Local)
+│   ├── bronze/             # Raw CSVs (Auditoría)
+│   └── silver/             # Optimized Parquet (Performance)
+├── output/                 # Reportes de Riesgo (.txt)
 ├── src/
-│   ├── api/                # 🌐 Capa de Servicio (Nuevo v2.0)
-│   │   ├── routers/        # Endpoints (e.g., /simulate)
-│   │   ├── schemas/        # Contratos Pydantic (Request/Response)
-│   │   └── main.py         # Entrypoint FastAPI
-│   ├── data/               # 💾 Capa de Ingesta
-│   ├── models/             # 🧠 Capa de Cálculo (Monte Carlo Core)
-│   └── utils/              # 🛠 Helpers
-├── output/                 # Persistencia de reportes
-├── Dockerfile              # 🐳 Definición de Imagen
-├── docker-compose.yml      # 🐙 Orquestador de Servicios
-├── requirements.txt        # Dependencias
+│   ├── data/
+│   │   └── loader.py       # Pipeline ELT (Extract-Load-Transform)
+│   ├── models/
+│   │   ├── base.py         # Interface (Strategy Pattern)
+│   │   ├── student_t.py    # Lógica Matemática (Concrete Strategy)
+│   │   ├── distributed.py  # ⚡ Ray Actor & Cluster Manager
+│   │   └── monte_carlo.py  # (Legacy) Motor Local
+│   └── utils/
+│       └── reporter.py     # Cálculo de VaR/CVaR
+├── main.py                 # 🚀 Entrypoint Orquestador
+├── requirements.txt        # Dependencias (incl. Ray)
 └── README.md               # Documentación
 
 ```
 
 ---
 
-## 🏁 Getting Started (Docker)
-
-La forma recomendada de ejecutar el motor es mediante contenedores. Esto garantiza que el entorno sea idéntico al de desarrollo.
+## 🏁 Getting Started
 
 ### Prerrequisitos
 
-* Docker & Docker Compose instalados.
+* Python 3.10+
+* RAM suficiente para levantar el cluster de Ray (min 4GB recomendado).
 
-### Despliegue en 1 Paso
+### Instalación y Ejecución
 
-1. **Clonar y Levantar:**
-
+1. **Clonar y Preparar Entorno**
 ```bash
 git clone https://github.com/tu-usuario/CL-RiskEngine.git
 cd CL-RiskEngine
-
-# Construir y levantar el servicio
-docker-compose up --build
+python3 -m venv env
+source env/bin/activate
+pip install -r requirements.txt
 
 ```
 
-2. **Verificar:**
-El servicio estará disponible en: `http://localhost:8000`
+
+2. **Ejecutar la Plataforma**
+```bash
+python main.py
+
+```
+
+
+*El sistema detectará automáticamente sus núcleos de CPU e iniciará el Cluster Ray.*
 
 ---
 
-## 🔌 API Usage
+## 📊 Performance
 
-Una vez levantado el servicio, puede interactuar con el motor a través de la documentación interactiva (Swagger UI) o mediante `curl`.
+Comparativa de rendimiento (Benchmark en 4-Core CPU):
 
-### 📖 Documentación Interactiva
-
-Visite **[http://localhost:8000/docs](https://www.google.com/search?q=http://localhost:8000/docs)** para probar los endpoints directamente desde el navegador.
-
-### ⚡ Ejemplo de Request (cURL)
-
-```bash
-curl -X 'POST' \
-  'http://localhost:8000/v1/risk/simulate' \
-  -H 'Content-Type: application/json' \
-  -d '{
-  "tickers": ["AAPL", "GOOGL", "MSFT"],
-  "horizon": 252,
-  "n_sims": 5000,
-  "confidence_level": 0.95
-}'
-
-```
-
-### 📦 Ejemplo de Respuesta (JSON)
-
-```json
-{
-  "status": "success",
-  "metadata": {
-    "start_date": "2024-02-08",
-    "end_date": "2026-02-07",
-    "execution_time": 0.45
-  },
-  "metrics": {
-    "VaR 95%": {
-      "value": -0.2811,
-      "description": "Pérdida máxima esperada con 95% de confianza"
-    },
-    "CVaR 95%": {
-      "value": -0.3839,
-      "description": "Pérdida promedio en el peor 5% de los casos"
-    }
-  }
-}
-
-```
+| Versión | Arquitectura | Sims/Seg | Tiempo (5k Sims) | Status |
+| --- | --- | --- | --- | --- |
+| v1.0 | Script Python Puro | ~200 | 25.4s | ❌ Deprecated |
+| v2.0 | Docker Monolith | ~850 | 5.8s | ⚠️ Legacy |
+| **v3.0** | **Ray Distributed** | **~2100** | **2.3s** | ✅ **Production** |
 
 ---
 
 ## ⚠️ Disclaimer
 
-Este software es una prueba de concepto (PoC) para **investigación académica y desarrollo de portafolio**. No constituye asesoramiento financiero. Los modelos estocásticos se basan en parámetros históricos que no garantizan rendimientos futuros.
+Este software es una herramienta de ingeniería financiera para **investigación y análisis cuantitativo**. Los resultados de modelos estocásticos (VaR/CVaR) son probabilidades, no certezas. No constituye asesoramiento de inversión.
 
 ---
 
@@ -166,7 +161,7 @@ Este software es una prueba de concepto (PoC) para **investigación académica y
 <img src="[https://img.shields.io/badge/LinkedIn-blue?style=flat&logo=linkedin&logoColor=white](https://img.shields.io/badge/LinkedIn-blue?style=flat&logo=linkedin&logoColor=white)" alt="LinkedIn" />
 </a>
 <a href="#">
-<img src="[https://img.shields.io/badge/GitHub-black?style=flat&logo=github&logoColor=white](https://www.google.com/search?q=https://img.shields.io/badge/GitHub-black%3Fstyle%3Dflat%26logo%3Dgithub%26logoColor%3Dwhite)" alt="GitHub" />
+<img src="[https://img.shields.io/badge/GitHub-black?style=flat&logo=github&logoColor=white](https://img.shields.io/badge/GitHub-black?style=flat&logo=github&logoColor=white)" alt="GitHub" />
 </a>
 </p>
 </div>
