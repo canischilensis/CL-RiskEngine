@@ -1,111 +1,90 @@
+import os
 import numpy as np
 import pandas as pd
-import os
-import datetime
+from datetime import datetime
 
 class RiskReporter:
-    def __init__(self, output_dir="output"):
-        """
-        Configurar dónde guardar los reportes.
-        Nota: Ya no forzamos el 'initial_capital' aquí, lo calculamos dinámico.
-        """
+    def __init__(self, output_dir="output", gold_dir="data/gold"):
         self.output_dir = output_dir
-        
-        if not os.path.exists(self.output_dir):
-            os.makedirs(self.output_dir)
+        self.gold_dir = gold_dir
+        os.makedirs(self.output_dir, exist_ok=True)
+        os.makedirs(self.gold_dir, exist_ok=True)
 
-    def compute_pnl(self, simulated_paths):
-        """
-        Calculr retornos comparando el valor FINAL contra el valor INICIAL real.
-        simulated_paths: Array (n_sims, horizon + 1, n_assets)
-        """
-        # 1. Obtener el valor del portafolio en t=0 (Inicio)
-        # Tomamos la primera fila de precios (todos los escenarios empiezan igual)
-        initial_prices = simulated_paths[0, 0, :]
-        portfolio_initial_value = np.sum(initial_prices)
+    def compute_pnl(self, simulated_paths: np.ndarray) -> np.ndarray:
+        """Calcula PnL del portafolio (Equiponderado)."""
+        # Sumamos precios de todos los activos en cada día/simulación
+        portfolio_paths = simulated_paths.sum(axis=2) # (n_sims, days)
         
-        # 2. Obtener el valor del portafolio en t=Final
-        final_prices = simulated_paths[:, -1, :]
-        portfolio_final_values = np.sum(final_prices, axis=1)
+        # Retorno Total al final del horizonte
+        initial_value = portfolio_paths[:, 0]
+        final_value = portfolio_paths[:, -1]
         
-        # 3. Calculr Retorno Real
-        # PnL = (Valor Final / Valor Inicial Real) - 1
-        portfolio_returns = (portfolio_final_values / portfolio_initial_value) - 1
-        
-        return portfolio_returns
+        # PnL %
+        return (final_value / initial_value) - 1
 
-    def calculate_metrics(self, portfolio_returns):
-        """
-        Calculr VaR y CVaR. 
-        OJO: En finanzas, el VaR suele reportarse como pérdida (negativo).
-        Aquí lo dejamos tal cual sale del percentil.
-        """
-        metrics = {}
-        alphas = [0.95, 0.99]
+    def calculate_metrics(self, pnl_array: np.ndarray, confidence=0.95):
+        """Calcula VaR y CVaR."""
+        var_percentile = (1 - confidence) * 100
         
-        for alpha in alphas:
-            # VaR: El percentil q (cola izquierda)
-            q = 1.0 - alpha
-            var_value = np.percentile(portfolio_returns, q * 100)
-            
-            # CVaR: Promedio de la cola
-            cvar_value = portfolio_returns[portfolio_returns <= var_value].mean()
-            
-            metrics[f'VaR {alpha:.0%}'] = var_value
-            metrics[f'CVaR {alpha:.0%}'] = cvar_value
-            
-        return metrics
+        var_value = np.percentile(pnl_array, var_percentile)
+        cvar_value = pnl_array[pnl_array <= var_value].mean()
+        
+        # Cálculo extremo (99%)
+        var_99 = np.percentile(pnl_array, 1)
+        cvar_99 = pnl_array[pnl_array <= var_99].mean()
+        
+        return {
+            f"VaR {int(confidence*100)}%": var_value,
+            f"CVaR {int(confidence*100)}%": cvar_value,
+            "VaR 99%": var_99,
+            "CVaR 99%": cvar_99
+        }
 
     def generate_report(self, metrics, params):
-        """
-        Escribir el reporte txt.
-        """
-        timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
-        filename = f"risk_report_{timestamp}.txt"
-        filepath = os.path.join(self.output_dir, filename)
+        """Genera TXT y guarda en CAPA ORO."""
+        timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M")
         
-        # Datframe pa la tabla
-        report_data = {
-            "Métrica": [
-                "Horizonte Temporal", 
-                "Simulaciones",
-                "VaR 95% (Confianza)", 
-                "CVaR 95% (Déficit Esp.)", 
-                "VaR 99% (Estrés)", 
-                "CVaR 99% (Colapso)"
-            ],
-            "Valor": [
-                f"{params.get('horizon')} días",
-                f"{params.get('n_sims')}",
-                f"{metrics['VaR 95%']:.2%}",
-                f"{metrics['CVaR 95%']:.2%}",
-                f"{metrics['VaR 99%']:.2%}",
-                f"{metrics['CVaR 99%']:.2%}"
-            ]
-        }
-        df = pd.DataFrame(report_data)
-
-        try:
-            with open(filepath, "w", encoding="utf-8") as f:
-                f.write("==================================================\n")
-                f.write(f"🛡️ CL-RISKENGINE | REPORTE EJECUTIVO\n")
-                f.write(f"Fecha: {timestamp}\n")
-                f.write("==================================================\n\n")
-                
-                f.write(f"ACTIVOS: {params.get('tickers')}\n")
-                f.write(f"MODELO: Monte Carlo Estructurado (t-Student)\n")
-                f.write("-" * 50 + "\n\n")
-                
-                f.write(df.to_string(index=False, justify="left"))
-                
-                f.write("\n\n" + "-" * 50 + "\n")
-                f.write("INTERPRETACIÓN:\n")
-                f.write(f"* VaR 95%: El límite inferior esperado con 95% de confianza es {metrics['VaR 95%']:.2%}.\n")
-                f.write(f"* Si el número es NEGATIVO, es pérdida. Si es POSITIVO, es la ganancia mínima.\n")
-                
-            print(f"✅ Reporte generado en: {filepath}")
-            return filepath
+        # 1. Reporte Humano (TXT)
+        filename = f"risk_report_{timestamp}.txt"
+        path = os.path.join(self.output_dir, filename)
+        
+        with open(path, 'w') as f:
+            f.write("="*50 + "\n")
+            f.write(f"🛡️ CL-RISKENGINE | REPORTE EJECUTIVO\n")
+            f.write(f"Fecha: {timestamp}\n")
+            f.write("="*50 + "\n\n")
+            f.write(f"ACTIVOS: {params['tickers']}\n")
+            f.write(f"MODELO: {params.get('model_name', 'Unknown')}\n")
+            f.write("-" * 50 + "\n")
+            for k, v in metrics.items():
+                f.write(f"{k:<25} {v:.2%}\n")
+            f.write("-" * 50 + "\n")
             
-        except Exception as e:
-            print(f"❌ Error escribiendo reporte: {e}")
-            return None
+        print(f"✅ Reporte TXT generado: {path}")
+
+        # 2. Capa Oro (Parquet - Time Travel)
+        # Guardamos un registro histórico estructurado
+        record = {
+            'execution_date': datetime.now(),
+            'model': params.get('model_name', 'Unknown'),
+            'n_sims': params['n_sims'],
+            'horizon': params['horizon'],
+            'var_95': metrics[f"VaR 95%"],
+            'cvar_95': metrics[f"CVaR 95%"],
+            'var_99': metrics["VaR 99%"],
+            'cvar_99': metrics["CVaR 99%"]
+        }
+        
+        df_gold = pd.DataFrame([record])
+        
+        # Modo Append: Leemos existente o creamos nuevo
+        gold_path = os.path.join(self.gold_dir, "risk_metrics_history.parquet")
+        
+        if os.path.exists(gold_path):
+            df_old = pd.read_parquet(gold_path)
+            df_final = pd.concat([df_old, df_gold], ignore_index=True)
+        else:
+            df_final = df_gold
+            
+        df_final.to_parquet(gold_path, index=False)
+        print(f"🏆 [Capa Oro] Métricas persistidas en: {gold_path}")
