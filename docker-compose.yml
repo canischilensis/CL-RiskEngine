@@ -1,52 +1,19 @@
 version: '3.8'
 
 services:
-  # 🦁 Servicio Principal: Motor de Riesgo
   risk-engine:
-    container_name: cl-risk-engine-api
-    build: 
-      context: .
-      dockerfile: Dockerfile
-    
-    # Mapeo de Puertos: (Host : Contenedor)
-    # Podrá acceder a la API en http://localhost:8000
-    ports:
-      - "8000:8000"
-    
-    # 💾 Persistencia y Desarrollo (Volumes)
+    build: .
+    container_name: cl_risk_engine_v4
+    # Montamos volúmenes para ver los resultados en nuestra máquina host
     volumes:
-      # 1. Código Fuente (Hot Reload):
-      # Conecta su carpeta local 'src' con la del contenedor.
-      # Cualquier cambio que guarde se refleja al instante.
-      - ./src:/app/src
-      
-      # 2. Salida de Reportes:
-      # Asegura que los TXT generados no mueran con el contenedor.
       - ./output:/app/output
-      
-      # 3. Configuración Local (Opcional):
-      # Si usa un .env local, lo inyectamos aquí.
-      - ./.env:/app/.env
-
-    # Variables de Entorno
+      - ./data:/app/data
+    # Variables de entorno (pueden sobreescribir settings.py)
     environment:
-      - PYTHONDONTWRITEBYTECODE=1
-      - PYTHONUNBUFFERED=1
-    
-    # Comando de Inicio (Override):
-    # Sobrescribimos el CMD del Dockerfile para agregar "--reload"
-    # Esto es vital para desarrollar rápido.
-    command: uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload
-
-    # 🏥 Healthcheck (Monitoreo):
-    # Docker preguntará cada 30s si la API sigue viva usando el endpoint que creamos.
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 5s
-
-    # Política de Reinicio:
-    # Si falla por un error de código, intenta levantar de nuevo.
-    restart: on-failure
+      - RAY_ADDRESS=local # Indica a Ray que corra en modo local dentro del container
+    # Límites de recursos (Opcional, para simular producción)
+    deploy:
+      resources:
+        limits:
+          cpus: '4'
+          memory: 4G
