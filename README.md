@@ -1,10 +1,4 @@
-Aquí tienes el **README.md** actualizado a la versión **v4.0.0 (Enterprise Edition)**.
-
-Este documento refleja todos los hitos de ingeniería que hemos completado: **Dockerización**, **Capa Oro (Persistencia)**, **Tests Unitarios**, **Singleton** y el soporte polimórfico (**GBM + Student-t**).
-
----
-
-# 🦁 CL-RiskEngine: Enterprise Financial Risk Platform
+# 💸 CL-RiskEngine: Enterprise Financial Risk Platform
 
 > **Plataforma de Riesgo Financiero "Production Ready"**. Sistema distribuido y containerizado que implementa simulación Monte Carlo (GBM & t-Student) sobre una arquitectura **Data Lakehouse Completa (Medallion)**, cumpliendo estándares de auditoría y portabilidad.
 
